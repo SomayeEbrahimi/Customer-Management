@@ -11,15 +11,6 @@ namespace Simple.OData.Client
 			}
 
 			
-				public static IBoundClient<CrmSolution.Shared.Dto.CustomerDto> Sum(this IBoundClient<CrmSolution.Shared.Dto.CustomerDto> customersController,int n1,int n2)
-				{
-					return customersController.Function("Sum").Set(new 
-					{ 
-						n1,n2
-					});
-				}
-
-			
 
 		    }
 }

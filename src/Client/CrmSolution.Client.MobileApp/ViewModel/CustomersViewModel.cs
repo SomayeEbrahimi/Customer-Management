@@ -8,11 +8,15 @@ using System.ComponentModel;
 using Xamarin.Forms.StateSquid;
 using System.Linq;
 using System;
+using CrmSolution.Shared.Dto;
+using Simple.OData.Client;
 
 namespace CrmSolution.Client.MobileApp.ViewModel
 {
     public class CustomersViewModel : BitViewModelBase, INotifyPropertyChanged
     {
+        public IODataClient ODataClient { get; set; }
+
         public CustomersViewModel()
         {
             AddCommand = new BitDelegateCommand(Save);
@@ -22,9 +26,9 @@ namespace CrmSolution.Client.MobileApp.ViewModel
 
         public State CurrentState { get; set; }
 
-        public List<Customer> AllCustomers { get; set; }
+        public List<CustomerDto> AllCustomers { get; set; }
 
-        public Customer[] CustomersView => string.IsNullOrEmpty(SearchText) ? AllCustomers?.ToArray() : AllCustomers?.Where(c => c.FullName.Contains(SearchText, StringComparison.InvariantCultureIgnoreCase))?.ToArray();
+        public CustomerDto[] CustomersView => string.IsNullOrEmpty(SearchText) ? AllCustomers?.ToArray() : AllCustomers?.Where(c => c.FullName.Contains(SearchText, StringComparison.InvariantCultureIgnoreCase))?.ToArray();
 
         public BitDelegateCommand AddCommand { get; set; }
 
@@ -44,16 +48,9 @@ namespace CrmSolution.Client.MobileApp.ViewModel
             {
                 CurrentState = State.Loading;
 
-                await Task.Delay(7000);
-
                 try
                 {
-                    AllCustomers = new List<Customer>
-                    {
-                        new Customer { Id = 1, FirstName = "Sasan", LastName = "Ebrahimi" },
-                        new Customer { Id = 2, FirstName = "Ali", LastName = "Rahimi" },
-                        new Customer { Id = 3, FirstName = "Mohammad", LastName = "Rostami" }
-                    };
+                    AllCustomers = (await ODataClient.Customers().FindEntriesAsync()).ToList();
                 }
                 finally
                 {
