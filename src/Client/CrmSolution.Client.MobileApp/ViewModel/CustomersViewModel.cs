@@ -1,49 +1,86 @@
 ﻿using Bit.ViewModel;
-using CrmSolution.Shared.Dto;
+using CrmSolution.Client.MobileApp.Enum;
+using CrmSolution.Client.MobileApp.Model;
 using Prism.Navigation;
-using Simple.OData.Client;
-using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.ComponentModel;
+using Xamarin.Forms.StateSquid;
+using System.Linq;
+using System;
 
 namespace CrmSolution.Client.MobileApp.ViewModel
 {
-    public class CustomersViewModel : BitViewModelBase
+    public class CustomersViewModel : BitViewModelBase, INotifyPropertyChanged
     {
-        public IODataClient ODataClient { get; set; }
-
-        public async override Task OnInitializeAsync(INavigationParameters parameters)
+        public CustomersViewModel()
         {
-            /*CustomerDto customer1 = await ODataClient.Customers()
-                .Set(new CustomerDto { FirstName = "Ali", LastName = "Ahmadi" })
-                .InsertEntryAsync();
+            AddCommand = new BitDelegateCommand(Save);
+            EditCommand = new BitDelegateCommand<Customer>(Save);
+            DeleteCommand = new BitDelegateCommand<Customer>(Delete);
+        }
 
-            CustomerDto customer2 = await ODataClient.Customers()
-                .Set(new CustomerDto { FirstName = "Reza", LastName = "Ahmadi" })
-                .InsertEntryAsync();
+        public State CurrentState { get; set; }
 
-            CustomerDto customer3 = await ODataClient.Customers()
-                .Set(new CustomerDto { FirstName = "Zahra", LastName = "Akbari" })
-                .InsertEntryAsync();
+        public List<Customer> AllCustomers { get; set; }
 
-            customer1.LastName = "Mohammadi";
+        public Customer[] CustomersView => string.IsNullOrEmpty(SearchText) ? AllCustomers?.ToArray() : AllCustomers?.Where(c => c.FullName.Contains(SearchText, StringComparison.InvariantCultureIgnoreCase))?.ToArray();
 
-            await ODataClient.Customers()
-                .Key(customer1.Id)
-                .Set(customer1)
-                .UpdateEntryAsync();
+        public BitDelegateCommand AddCommand { get; set; }
 
-            CustomerDto[] customers = (await ODataClient.Customers()
-                .FindEntriesAsync()).ToArray();
+        public BitDelegateCommand<Customer> EditCommand { get; set; }
 
-            CustomerDto[] customers2 = (await ODataClient.Customers()
-                .Where(c => c.FirstName.Contains("ali") || c.LastName.Contains("ali"))
-                .FindEntriesAsync()).ToArray();*/
+        public BitDelegateCommand<Customer> DeleteCommand { get; set; }
 
-            int result = await ODataClient.Customers()
-                .Sum(1, 2)
-                .ExecuteAsScalarAsync<int>();
+        public BitDelegateCommand SearchCommand { get; set; }
 
-            await base.OnInitializeAsync(parameters);
+        public string SearchText { get; set; }
+
+        public async override Task OnNavigatedToAsync(INavigationParameters parameters)
+        {
+            await base.OnNavigatedToAsync(parameters);
+
+            if (parameters.GetNavigationMode() == NavigationMode.New)
+            {
+                CurrentState = State.Loading;
+
+                await Task.Delay(7000);
+
+                try
+                {
+                    AllCustomers = new List<Customer>
+                    {
+                        new Customer { Id = 1, FirstName = "Sasan", LastName = "Ebrahimi" },
+                        new Customer { Id = 2, FirstName = "Ali", LastName = "Rahimi" },
+                        new Customer { Id = 3, FirstName = "Mohammad", LastName = "Rostami" }
+                    };
+                }
+                finally
+                {
+                    CurrentState = State.None;
+                }
+            }
+        }
+
+        async Task Save()
+        {
+            await Save(null);
+        }
+
+        async Task Save(Customer customer)
+        {
+            await NavigationService.NavigateAsync("SaveCustomer", new NavigationParameters
+            {
+               { "customer", customer }
+            });
+        }
+
+        async Task Delete(Customer customer)
+        {
+            await NavigationService.NavigateAsync("DeleteCustomer", new NavigationParameters
+            {
+               { "customer", customer }
+            });
         }
     }
 }

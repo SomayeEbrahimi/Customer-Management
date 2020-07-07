@@ -1,8 +1,10 @@
-﻿using Autofac;
+﻿using Acr.UserDialogs;
+using Autofac;
 using Bit;
 using Bit.Core.Contracts;
 using Bit.Core.Implementations;
 using Bit.View;
+using CrmSolution.Client.MobileApp.Service;
 using CrmSolution.Client.MobileApp.View;
 using CrmSolution.Client.MobileApp.ViewModel;
 using Microsoft.Extensions.DependencyInjection;
@@ -47,6 +49,12 @@ namespace CrmSolution.Client.MobileApp
         {
             containerRegistry.RegisterForNav<NavigationPage>("Nav");
             containerRegistry.RegisterForNav<CustomersView, CustomersViewModel>("Customers");
+            containerRegistry.RegisterForNav<SaveCustomerView, SaveCustomerViewModel>("SaveCustomer");
+            containerRegistry.RegisterForNav<DeleteCustomerView, DeleteCustomerViewModel>("DeleteCustomer");
+
+            containerBuilder.RegisterInstance(UserDialogs.Instance);
+
+            dependencyManager.Register<ValidationService>();
             containerBuilder.Register<IClientAppProfile>(c => new DefaultClientAppProfile
             {
                 AppName = "CrmSolution",

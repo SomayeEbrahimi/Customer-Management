@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="CrmSolution.Client.MobileApp.View.SaveCustomerView"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:CrmSolution.Client.MobileApp.ViewModel"
+    Title="Customers"
+    x:DataType="vm:SaveCustomerViewModel"
+    mc:Ignorable="d">
+    <StackLayout StyleClass="m-20">
+        <Frame>
+            <StackLayout Spacing="20">
+                <Entry Placeholder="First Name" Text="{Binding Customer.FirstName}" />
+                <Entry Placeholder="Last Name" Text="{Binding Customer.LastName}" />
+                <Button
+                    Command="{Binding SaveCommand}"
+                    StyleClass="m-20"
+                    Text="{Binding Action}" />
+            </StackLayout>
+        </Frame>
+    </StackLayout>
+</ContentPage>

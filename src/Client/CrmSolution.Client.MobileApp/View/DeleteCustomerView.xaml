@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage 
+             x:Class="CrmSolution.Client.MobileApp.View.DeleteCustomerView"
+             xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:CrmSolution.Client.MobileApp.ViewModel"         
+             Title="Customers"
+             x:DataType="vm:DeleteCustomerViewModel"
+             mc:Ignorable="d">
+            <StackLayout StyleClass="m-20">
+                <Frame>
+                    <StackLayout Spacing="20">
+                        <Label Text="* Are your sure you want to delete this customer?" 
+                            TextColor="Red"/>
+                        <Label FontAttributes="Bold" Text="{Binding Customer.FullName}" />
+                        <Button Text="Delete Customer" StyleClass="m-20" 
+                            Command="{Binding DeleteCommand}" />
+                    </StackLayout>
+                </Frame>
+            </StackLayout>
+</ContentPage>

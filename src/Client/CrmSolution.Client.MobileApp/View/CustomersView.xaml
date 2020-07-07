@@ -5,12 +5,92 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:d="http://xamarin.com/schemas/2014/forms/design"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:model="clr-namespace:CrmSolution.Client.MobileApp.Model"
+    xmlns:state="clr-namespace:Xamarin.Forms.StateSquid;assembly=Xamarin.Forms.StateSquid"
+    xmlns:vm="clr-namespace:CrmSolution.Client.MobileApp.ViewModel"
+    x:Name="customersView"
     Title="Customers"
+    x:DataType="vm:CustomersViewModel"
     mc:Ignorable="d">
     <StackLayout>
-        <Label
-            HorizontalOptions="CenterAndExpand"
-            Text="Customers..."
-            VerticalOptions="CenterAndExpand" />
+        <SearchBar
+            x:Name="customerSearch"
+            CancelButtonColor="#0984e3"
+            HorizontalTextAlignment="Center"
+            Placeholder="Search Customer"
+            Text="{Binding SearchText}" />
+        <StackLayout state:StateLayout.CurrentState="{Binding CurrentState}" StyleClass="m-20">
+            <state:StateLayout.StateViews>
+                <state:StateView RepeatCount="3" StateKey="Loading">
+                    <state:StateView.RepeatTemplate>
+                        <DataTemplate>
+                            <Frame>
+                                <Grid ColumnDefinitions=".5*, *, .5*, .5*" RowDefinitions="3*, 3*">
+                                    <Image
+                                        Grid.RowSpan="3"
+                                        Source="user.png"
+                                        StyleClass="mr-20" />
+                                    <state:SkeletonView Grid.Column="1" StyleClass="skeleton" />
+                                    <state:SkeletonView
+                                        Grid.Row="1"
+                                        Grid.Column="1"
+                                        StyleClass="skeleton" />
+                                    <state:SkeletonView
+                                        Grid.RowSpan="2"
+                                        Grid.Column="2"
+                                        StyleClass="skeleton" />
+                                    <state:SkeletonView
+                                        Grid.RowSpan="2"
+                                        Grid.Column="3"
+                                        StyleClass="skeleton" />
+                                </Grid>
+                            </Frame>
+                        </DataTemplate>
+                    </state:StateView.RepeatTemplate>
+                </state:StateView>
+            </state:StateLayout.StateViews>
+            <CollectionView x:Name="customers" ItemsSource="{Binding CustomersView}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame x:DataType="model:Customer">
+                            <Grid ColumnDefinitions=".5*, *, .5*, .5*" RowDefinitions="3*, 3*">
+                                <Image
+                                    Grid.RowSpan="3"
+                                    Source="user.png"
+                                    StyleClass="mr-20" />
+                                <Label
+                                    Grid.Column="1"
+                                    FontAttributes="Bold"
+                                    Text="{Binding FirstName}" />
+                                <Label
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    StyleClass="italic"
+                                    Text="{Binding LastName}" />
+                                <Button
+                                    Grid.RowSpan="2"
+                                    Grid.Column="2"
+                                    Command="{Binding BindingContext.EditCommand, Source={x:Reference customersView}}"
+                                    CommandParameter="{Binding .}"
+                                    Text="Edit" />
+                                <Button
+                                    Grid.RowSpan="2"
+                                    Grid.Column="3"
+                                    Command="{Binding BindingContext.DeleteCommand, Source={x:Reference customersView}}"
+                                    CommandParameter="{Binding .}"
+                                    Text="Del" />
+                            </Grid>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+            <Button
+                Command="{Binding AddCommand}"
+                CornerRadius="30"
+                HorizontalOptions="Center"
+                StyleClass="circle-btn"
+                Text="+"
+                VerticalOptions="Center" />
+        </StackLayout>
     </StackLayout>
 </ContentPage>

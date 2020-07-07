@@ -1,4 +1,5 @@
-﻿using Android.App;
+﻿using Acr.UserDialogs;
+using Android.App;
 using Android.Content.PM;
 using Android.OS;
 using Autofac;
@@ -18,7 +19,12 @@ namespace CrmSolution.Client.MobileApp.Droid
         {
             LocalTelemetryService.Current.Init();
 
-            BitExceptionHandler.Current = new CrmSolutionExceptionHandler();
+            UserDialogs.Init(this);
+
+            BitExceptionHandler.Current = new CrmSolutionExceptionHandler
+            {
+                UserDialogs = UserDialogs.Instance
+            };
 
             TabLayoutResource = Resource.Layout.Tabbar;
             ToolbarResource = Resource.Layout.Toolbar;
