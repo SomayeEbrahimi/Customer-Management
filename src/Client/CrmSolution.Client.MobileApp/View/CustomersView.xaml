@@ -5,7 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:d="http://xamarin.com/schemas/2014/forms/design"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:model="clr-namespace:CrmSolution.Client.MobileApp.Model"
+    xmlns:model="clr-namespace:CrmSolution.Shared.Dto;assembly=CrmSolution.Client.Dto"
     xmlns:state="clr-namespace:Xamarin.Forms.StateSquid;assembly=Xamarin.Forms.StateSquid"
     xmlns:vm="clr-namespace:CrmSolution.Client.MobileApp.ViewModel"
     x:Name="customersView"
@@ -52,7 +52,7 @@
             <CollectionView x:Name="customers" ItemsSource="{Binding CustomersView}">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Frame x:DataType="model:Customer">
+                        <Frame x:DataType="model:CustomerDto">
                             <Grid ColumnDefinitions=".5*, *, .5*, .5*" RowDefinitions="3*, 3*">
                                 <Image
                                     Grid.RowSpan="3"

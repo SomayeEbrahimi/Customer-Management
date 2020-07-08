@@ -1,6 +1,4 @@
 ﻿using Bit.ViewModel;
-using CrmSolution.Client.MobileApp.Enum;
-using CrmSolution.Client.MobileApp.Model;
 using Prism.Navigation;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -21,7 +19,7 @@ namespace CrmSolution.Client.MobileApp.ViewModel
         {
             AddCommand = new BitDelegateCommand(Save);
             EditCommand = new BitDelegateCommand<CustomerDto>(Save);
-            DeleteCommand = new BitDelegateCommand<Customer>(Delete);
+            DeleteCommand = new BitDelegateCommand<CustomerDto>(Delete);
         }
 
         public State CurrentState { get; set; }
@@ -34,7 +32,7 @@ namespace CrmSolution.Client.MobileApp.ViewModel
 
         public BitDelegateCommand<CustomerDto> EditCommand { get; set; }
 
-        public BitDelegateCommand<Customer> DeleteCommand { get; set; }
+        public BitDelegateCommand<CustomerDto> DeleteCommand { get; set; }
 
         public BitDelegateCommand SearchCommand { get; set; }
 
@@ -69,7 +67,7 @@ namespace CrmSolution.Client.MobileApp.ViewModel
             });
         }
 
-        async Task Delete(Customer customer)
+        async Task Delete(CustomerDto customer)
         {
             await NavigationService.NavigateAsync("DeleteCustomer", new NavigationParameters
             {
