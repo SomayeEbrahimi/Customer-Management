@@ -2,7 +2,7 @@
   "profiles": {
     "CrmSolution.Server.Api": {
       "commandName": "Project",
-      "launchBrowser": true,
+      "launchBrowser": false,
       "launchUrl": "odata/swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
