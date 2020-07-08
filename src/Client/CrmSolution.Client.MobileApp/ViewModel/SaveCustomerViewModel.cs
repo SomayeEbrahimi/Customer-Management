@@ -1,15 +1,18 @@
 ﻿using Bit.Core.Exceptions;
 using Bit.ViewModel;
 using CrmSolution.Client.MobileApp.Enum;
-using CrmSolution.Client.MobileApp.Model;
 using CrmSolution.Client.MobileApp.Service;
+using CrmSolution.Shared.Dto;
 using Prism.Navigation;
+using Simple.OData.Client;
 using System.Threading.Tasks;
 
 namespace CrmSolution.Client.MobileApp.ViewModel
 {
     public class SaveCustomerViewModel : BitViewModelBase
     {
+        public IODataClient ODataClient { get; set; }
+
         public Action Action { get; set; } = Action.Edit;
 
         public ValidationService ValidationService { get; set; }
@@ -19,7 +22,7 @@ namespace CrmSolution.Client.MobileApp.ViewModel
             SaveCommand = new BitDelegateCommand(Save);
         }
 
-        public Customer Customer { get; set; }
+        public CustomerDto Customer { get; set; }
 
         public BitDelegateCommand SaveCommand { get; set; }
 
@@ -27,26 +30,41 @@ namespace CrmSolution.Client.MobileApp.ViewModel
         {
             await base.OnNavigatedToAsync(parameters);
 
-            Customer = parameters.GetValue<Customer>("customer");
+            Customer = parameters.GetValue<CustomerDto>("customer");
 
             if (Customer == null)
             {
                 Action = Action.Add;
-                Customer = new Customer { };
+                Customer = new CustomerDto { };
             }
         }
 
         async Task Save()
         {
-            await Task.Delay(700);
-
             if (string.IsNullOrEmpty(Customer.FirstName) || string.IsNullOrEmpty(Customer.LastName))
                 throw new DomainLogicException("Please provide First Name and Last Name!");
 
             if (!ValidationService.IsEnglishLetters(Customer.FirstName) || !ValidationService.IsEnglishLetters(Customer.LastName) || Customer.FirstName.Length > 20 || Customer.LastName.Length > 30)
                 throw new DomainLogicException("Invalid First Name or Last Name!");
 
+            if (Action == Action.Add) await Add();
+            else await Update();
+
             await NavigationService.GoBackAsync();
+        }
+
+        async Task Add()
+        {
+            await ODataClient.Customers()
+                .Set(new CustomerDto { FirstName = Customer.FirstName, LastName = Customer.LastName })
+                .InsertEntryAsync();
+        }
+
+        async Task Update()
+        {
+            await ODataClient.Customers().Key(Customer.Id)
+                .Set(Customer)
+                .UpdateEntryAsync();
         }
     }
 }

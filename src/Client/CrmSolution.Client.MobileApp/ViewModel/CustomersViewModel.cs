@@ -20,7 +20,7 @@ namespace CrmSolution.Client.MobileApp.ViewModel
         public CustomersViewModel()
         {
             AddCommand = new BitDelegateCommand(Save);
-            EditCommand = new BitDelegateCommand<Customer>(Save);
+            EditCommand = new BitDelegateCommand<CustomerDto>(Save);
             DeleteCommand = new BitDelegateCommand<Customer>(Delete);
         }
 
@@ -32,7 +32,7 @@ namespace CrmSolution.Client.MobileApp.ViewModel
 
         public BitDelegateCommand AddCommand { get; set; }
 
-        public BitDelegateCommand<Customer> EditCommand { get; set; }
+        public BitDelegateCommand<CustomerDto> EditCommand { get; set; }
 
         public BitDelegateCommand<Customer> DeleteCommand { get; set; }
 
@@ -44,18 +44,15 @@ namespace CrmSolution.Client.MobileApp.ViewModel
         {
             await base.OnNavigatedToAsync(parameters);
 
-            if (parameters.GetNavigationMode() == NavigationMode.New)
-            {
-                CurrentState = State.Loading;
+            CurrentState = State.Loading;
 
-                try
-                {
-                    AllCustomers = (await ODataClient.Customers().FindEntriesAsync()).ToList();
-                }
-                finally
-                {
-                    CurrentState = State.None;
-                }
+            try
+            {
+                AllCustomers = (await ODataClient.Customers().FindEntriesAsync()).ToList();
+            }
+            finally
+            {
+                CurrentState = State.None;
             }
         }
 
@@ -64,11 +61,11 @@ namespace CrmSolution.Client.MobileApp.ViewModel
             await Save(null);
         }
 
-        async Task Save(Customer customer)
+        async Task Save(CustomerDto customer)
         {
             await NavigationService.NavigateAsync("SaveCustomer", new NavigationParameters
             {
-               { "customer", customer }
+               { "customer", customer}
             });
         }
 
@@ -76,7 +73,7 @@ namespace CrmSolution.Client.MobileApp.ViewModel
         {
             await NavigationService.NavigateAsync("DeleteCustomer", new NavigationParameters
             {
-               { "customer", customer }
+               { "customer", customer}
             });
         }
     }

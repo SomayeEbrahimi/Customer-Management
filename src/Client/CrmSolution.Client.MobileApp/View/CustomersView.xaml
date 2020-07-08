@@ -71,13 +71,13 @@
                                     Grid.RowSpan="2"
                                     Grid.Column="2"
                                     Command="{Binding BindingContext.EditCommand, Source={x:Reference customersView}}"
-                                    CommandParameter="{Binding Id}"
+                                    CommandParameter="{Binding .}"
                                     Text="Edit" />
                                 <Button
                                     Grid.RowSpan="2"
                                     Grid.Column="3"
                                     Command="{Binding BindingContext.DeleteCommand, Source={x:Reference customersView}}"
-                                    CommandParameter="{Binding Id}"
+                                    CommandParameter="{Binding .}"
                                     Text="Del" />
                             </Grid>
                         </Frame>
