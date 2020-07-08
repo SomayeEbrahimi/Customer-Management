@@ -6,6 +6,7 @@
     xmlns:d="http://xamarin.com/schemas/2014/forms/design"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:model="clr-namespace:CrmSolution.Shared.Dto;assembly=CrmSolution.Client.Dto"
+    xmlns:prismBehaviors="clr-namespace:Prism.Behaviors;assembly=Prism.Forms"
     xmlns:state="clr-namespace:Xamarin.Forms.StateSquid;assembly=Xamarin.Forms.StateSquid"
     xmlns:vm="clr-namespace:CrmSolution.Client.MobileApp.ViewModel"
     x:Name="customersView"
@@ -14,34 +15,14 @@
     mc:Ignorable="d">
     <StackLayout>
         <SearchBar
-            x:Name="customerSearch"
             CancelButtonColor="#0984e3"
             HorizontalTextAlignment="Center"
             Placeholder="Search Customer"
             Text="{Binding SearchText}">
-            <SearchBar.Triggers>
-                <DataTrigger
-                    Binding="{Binding CustomerCounts}"
-                    TargetType="SearchBar"
-                    Value="0">
-                    <Setter Property="IsVisible" Value="False" />
-                </DataTrigger>
-            </SearchBar.Triggers>
+            <SearchBar.Behaviors>
+                <prismBehaviors:EventToCommandBehavior Command="{Binding SearchCommand}" EventName="TextChanged" />
+            </SearchBar.Behaviors>
         </SearchBar>
-        <Label
-            Text="No customer found!"
-            HorizontalOptions="Center"
-            StyleClass="not-found"
-            IsVisible="False">
-            <Label.Triggers>
-                <DataTrigger
-                    Binding="{Binding CustomerCounts}"
-                    TargetType="Label"
-                    Value="0">
-                    <Setter Property="IsVisible" Value="True" />
-                </DataTrigger>
-            </Label.Triggers>
-        </Label>
         <StackLayout state:StateLayout.CurrentState="{Binding CurrentState}" StyleClass="m-20">
             <state:StateLayout.StateViews>
                 <state:StateView RepeatCount="5" StateKey="Loading">
@@ -72,7 +53,18 @@
                     </state:StateView.RepeatTemplate>
                 </state:StateView>
             </state:StateLayout.StateViews>
-            <CollectionView x:Name="customers" ItemsSource="{Binding CustomersView}">
+            <CollectionView
+                x:Name="customers"
+                ItemsSource="{Binding Customers}"
+                RemainingItemsThreshold="{Binding ItemsThreshold}"
+                RemainingItemsThresholdReachedCommand="{Binding LoadMoreCommand}">
+                <CollectionView.EmptyView>
+                    <Label
+                        HorizontalOptions="Fill"
+                        HorizontalTextAlignment="Center"
+                        StyleClass="not-found"
+                        Text="No customer found!" />
+                </CollectionView.EmptyView>
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <Frame x:DataType="model:CustomerDto">

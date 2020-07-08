@@ -1,13 +1,12 @@
 ﻿using Bit.ViewModel;
 using Prism.Navigation;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.ComponentModel;
 using Xamarin.Forms.StateSquid;
 using System.Linq;
-using System;
 using CrmSolution.Shared.Dto;
 using Simple.OData.Client;
+using System.Collections.ObjectModel;
 
 namespace CrmSolution.Client.MobileApp.ViewModel
 {
@@ -15,8 +14,12 @@ namespace CrmSolution.Client.MobileApp.ViewModel
     {
         public IODataClient ODataClient { get; set; }
 
+        int index = 0; int size = 5;
+
         public CustomersViewModel()
         {
+            LoadMoreCommand = new BitDelegateCommand(Get);
+            SearchCommand = new BitDelegateCommand(Search);
             AddCommand = new BitDelegateCommand(Save);
             EditCommand = new BitDelegateCommand<CustomerDto>(Save);
             DeleteCommand = new BitDelegateCommand<CustomerDto>(Delete);
@@ -24,11 +27,11 @@ namespace CrmSolution.Client.MobileApp.ViewModel
 
         public State CurrentState { get; set; }
 
-        public int CustomerCounts { get; set; }
+        public int ItemsThreshold { get; set; }
 
-        public List<CustomerDto> AllCustomers { get; set; }
+        public ObservableCollection<CustomerDto> Customers { get; set; }
 
-        public CustomerDto[] CustomersView => string.IsNullOrEmpty(SearchText) ? AllCustomers?.ToArray() : AllCustomers?.Where(c => c.FullName.Contains(SearchText, StringComparison.InvariantCultureIgnoreCase))?.ToArray();
+        public BitDelegateCommand LoadMoreCommand { get; set; }
 
         public BitDelegateCommand AddCommand { get; set; }
 
@@ -45,17 +48,43 @@ namespace CrmSolution.Client.MobileApp.ViewModel
             await base.OnNavigatedToAsync(parameters);
 
             CurrentState = State.Loading;
-            CustomerCounts = 1;
 
             try
             {
-                AllCustomers = (await ODataClient.Customers().FindEntriesAsync()).ToList();
-                CustomerCounts = AllCustomers.Count;
+                ItemsThreshold = 0;
+                await Get();
             }
             finally
             {
                 CurrentState = State.None;
             }
+        }
+
+        async Task Get()
+        {
+            var customers = (await ODataClient.Customers().Skip(index * size).Take(size)
+                .OrderByDescending(o => o.Id).FindEntriesAsync()).ToList();
+
+            if (customers.Count == 0)
+                ItemsThreshold = -1;
+            else ItemsThreshold = 0;
+
+            Customers = new ObservableCollection<CustomerDto>(customers);
+
+            index++;
+        }
+
+        async Task Search()
+        {
+            if (!string.IsNullOrEmpty(SearchText))
+            {
+                var customers = (await ODataClient.Customers()
+               .Where(c => c.FirstName.Contains(SearchText) || c.LastName.Contains(SearchText))
+               .FindEntriesAsync()).ToList();
+
+                Customers = new ObservableCollection<CustomerDto>(customers);
+            }
+            else await Get();
         }
 
         async Task Save()

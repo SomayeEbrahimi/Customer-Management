@@ -46,7 +46,7 @@ searchbar {
     width: 30;
 }
 .not-found {
-    margin-top: 80;
+    padding-top: 50;
     font-style: italic;
 }
 
