@@ -45,3 +45,8 @@ searchbar {
     height: 60;
     width: 30;
 }
+.not-found {
+    margin-top: 80;
+    font-style: italic;
+}
+

@@ -18,10 +18,33 @@
             CancelButtonColor="#0984e3"
             HorizontalTextAlignment="Center"
             Placeholder="Search Customer"
-            Text="{Binding SearchText}" />
+            Text="{Binding SearchText}">
+            <SearchBar.Triggers>
+                <DataTrigger
+                    Binding="{Binding CustomerCounts}"
+                    TargetType="SearchBar"
+                    Value="0">
+                    <Setter Property="IsVisible" Value="False" />
+                </DataTrigger>
+            </SearchBar.Triggers>
+        </SearchBar>
+        <Label
+            Text="No customer found!"
+            HorizontalOptions="Center"
+            StyleClass="not-found"
+            IsVisible="False">
+            <Label.Triggers>
+                <DataTrigger
+                    Binding="{Binding CustomerCounts}"
+                    TargetType="Label"
+                    Value="0">
+                    <Setter Property="IsVisible" Value="True" />
+                </DataTrigger>
+            </Label.Triggers>
+        </Label>
         <StackLayout state:StateLayout.CurrentState="{Binding CurrentState}" StyleClass="m-20">
             <state:StateLayout.StateViews>
-                <state:StateView RepeatCount="3" StateKey="Loading">
+                <state:StateView RepeatCount="5" StateKey="Loading">
                     <state:StateView.RepeatTemplate>
                         <DataTemplate>
                             <Frame>

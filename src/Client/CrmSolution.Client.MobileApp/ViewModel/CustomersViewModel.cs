@@ -24,6 +24,8 @@ namespace CrmSolution.Client.MobileApp.ViewModel
 
         public State CurrentState { get; set; }
 
+        public int CustomerCounts { get; set; }
+
         public List<CustomerDto> AllCustomers { get; set; }
 
         public CustomerDto[] CustomersView => string.IsNullOrEmpty(SearchText) ? AllCustomers?.ToArray() : AllCustomers?.Where(c => c.FullName.Contains(SearchText, StringComparison.InvariantCultureIgnoreCase))?.ToArray();
@@ -43,10 +45,12 @@ namespace CrmSolution.Client.MobileApp.ViewModel
             await base.OnNavigatedToAsync(parameters);
 
             CurrentState = State.Loading;
+            CustomerCounts = 1;
 
             try
             {
                 AllCustomers = (await ODataClient.Customers().FindEntriesAsync()).ToList();
+                CustomerCounts = AllCustomers.Count;
             }
             finally
             {
