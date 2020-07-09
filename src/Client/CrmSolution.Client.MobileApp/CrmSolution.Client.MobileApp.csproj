@@ -31,16 +31,4 @@
 	  <ProjectReference Include="..\CrmSolution.Client.Dto\CrmSolution.Client.Dto.csproj" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <EmbeddedResource Update="View\CustomersView.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </EmbeddedResource>
-	  <EmbeddedResource Update="View\DeleteCustomerView.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </EmbeddedResource>
-	  <EmbeddedResource Update="View\SaveCustomerView.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </EmbeddedResource>
-	</ItemGroup>
-
 </Project>
