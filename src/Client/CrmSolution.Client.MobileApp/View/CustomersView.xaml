@@ -25,7 +25,7 @@
         </SearchBar>
         <StackLayout state:StateLayout.CurrentState="{Binding CurrentState}" StyleClass="m-20">
             <state:StateLayout.StateViews>
-                <state:StateView RepeatCount="1" StateKey="Loading">
+                <state:StateView RepeatCount="5" StateKey="Loading">
                     <state:StateView.RepeatTemplate>
                         <DataTemplate>
                             <Frame>
@@ -53,59 +53,51 @@
                     </state:StateView.RepeatTemplate>
                 </state:StateView>
             </state:StateLayout.StateViews>
-            <RefreshView Command="{Binding RefreshItemsCommand}" IsRefreshing="{Binding IsRefreshing}">
-                <CollectionView
-                    ItemsSource="{Binding Customers}"
-                    RemainingItemsThreshold="{Binding ItemsThreshold}"
-                    RemainingItemsThresholdReachedCommand="{Binding LoadMoreCommand}">
-                    <CollectionView.EmptyView>
-                        <Label
-                            HorizontalOptions="Fill"
-                            HorizontalTextAlignment="Center"
-                            StyleClass="not-found"
-                            Text="No customer found!" />
-                    </CollectionView.EmptyView>
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate>
-                            <Frame x:DataType="model:CustomerDto">
-                                <Grid ColumnDefinitions=".5*, *, .5*, .5*" RowDefinitions="3*, 3*">
-                                    <Image
-                                        Grid.RowSpan="3"
-                                        Source="user.png"
-                                        StyleClass="mr-20" />
-                                    <Label
-                                        Grid.Column="1"
-                                        FontAttributes="Bold"
-                                        Text="{Binding FirstName}" />
-                                    <Label
-                                        Grid.Row="1"
-                                        Grid.Column="1"
-                                        StyleClass="italic"
-                                        Text="{Binding LastName}" />
-                                    <Button
-                                        Grid.RowSpan="2"
-                                        Grid.Column="2"
-                                        Command="{Binding BindingContext.EditCommand, Source={x:Reference customersView}}"
-                                        CommandParameter="{Binding .}"
-                                        Text="Edit" />
-                                    <Button
-                                        Grid.RowSpan="2"
-                                        Grid.Column="3"
-                                        Command="{Binding BindingContext.DeleteCommand, Source={x:Reference customersView}}"
-                                        CommandParameter="{Binding .}"
-                                        Text="Del" />
-                                </Grid>
-                            </Frame>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
-            </RefreshView>
-            <ActivityIndicator
-                HeightRequest="30"
-                HorizontalOptions="Center"
-                IsRunning="{Binding IsBusy}"
-                VerticalOptions="Center"
-                WidthRequest="30" />
+            <CollectionView
+                ItemsSource="{Binding Customers}"
+                RemainingItemsThreshold="{Binding ItemsThreshold}"
+                RemainingItemsThresholdReachedCommand="{Binding LoadMoreCommand}">
+                <CollectionView.EmptyView>
+                    <Label
+                        HorizontalOptions="Fill"
+                        HorizontalTextAlignment="Center"
+                        StyleClass="not-found"
+                        Text="No customer found!" />
+                </CollectionView.EmptyView>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame x:DataType="model:CustomerDto">
+                            <Grid ColumnDefinitions=".5*, *, .5*, .5*" RowDefinitions="3*, 3*">
+                                <Image
+                                    Grid.RowSpan="3"
+                                    Source="user.png"
+                                    StyleClass="mr-20" />
+                                <Label
+                                    Grid.Column="1"
+                                    FontAttributes="Bold"
+                                    Text="{Binding FirstName}" />
+                                <Label
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    StyleClass="italic"
+                                    Text="{Binding LastName}" />
+                                <Button
+                                    Grid.RowSpan="2"
+                                    Grid.Column="2"
+                                    Command="{Binding BindingContext.EditCommand, Source={x:Reference customersView}}"
+                                    CommandParameter="{Binding .}"
+                                    Text="Edit" />
+                                <Button
+                                    Grid.RowSpan="2"
+                                    Grid.Column="3"
+                                    Command="{Binding BindingContext.DeleteCommand, Source={x:Reference customersView}}"
+                                    CommandParameter="{Binding .}"
+                                    Text="Del" />
+                            </Grid>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
             <Button
                 Command="{Binding AddCommand}"
                 CornerRadius="30"

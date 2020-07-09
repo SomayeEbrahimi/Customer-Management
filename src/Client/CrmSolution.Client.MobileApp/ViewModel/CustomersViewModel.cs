@@ -7,6 +7,7 @@ using System.Linq;
 using CrmSolution.Shared.Dto;
 using Simple.OData.Client;
 using System.Collections.ObjectModel;
+using System.Collections.Generic;
 
 namespace CrmSolution.Client.MobileApp.ViewModel
 {
@@ -14,7 +15,8 @@ namespace CrmSolution.Client.MobileApp.ViewModel
     {
         public IODataClient ODataClient { get; set; }
 
-        int index = 0; int size = 5;
+        int size = 5;
+        List<CustomerDto> customerList = new List<CustomerDto>();
 
         public CustomersViewModel()
         {
@@ -23,19 +25,13 @@ namespace CrmSolution.Client.MobileApp.ViewModel
             AddCommand = new BitDelegateCommand(Save);
             EditCommand = new BitDelegateCommand<CustomerDto>(Save);
             DeleteCommand = new BitDelegateCommand<CustomerDto>(Delete);
-            RefreshItemsCommand = new BitDelegateCommand(Refresh);
         }
+
         public State CurrentState { get; set; }
 
         public int ItemsThreshold { get; set; }
 
-        public bool IsBusy { get; set; } = false;
-
-        public bool IsRefreshing { get; set; } = false;
-
         public ObservableCollection<CustomerDto> Customers { get; set; }
-
-        public BitDelegateCommand RefreshItemsCommand { get; set; }
 
         public BitDelegateCommand LoadMoreCommand { get; set; }
 
@@ -54,7 +50,6 @@ namespace CrmSolution.Client.MobileApp.ViewModel
             await base.OnNavigatedToAsync(parameters);
 
             CurrentState = State.Loading;
-            ItemsThreshold = 5;
 
             try
             {
@@ -66,52 +61,29 @@ namespace CrmSolution.Client.MobileApp.ViewModel
             }
         }
 
-        async Task Refresh()
-        {
-            await Get();
-            IsRefreshing = false;
-        }
-
         async Task Get()
         {
-            try
-            {
-                IsBusy = true;
+            ItemsThreshold = 0;
 
-                var customers = (await ODataClient.Customers().Take(size)
-                .OrderByDescending(o => o.Id).FindEntriesAsync()).ToList();
-
-                if (customers.Count == 0) ItemsThreshold = -1;
-
-                Customers = new ObservableCollection<CustomerDto>(customers);
-            }
-            finally
-            {
-                IsBusy = false;
-            }
+            customerList = (await ODataClient.Customers().Take(size).OrderByDescending(o => o.Id).FindEntriesAsync()).ToList();
+            Customers = new ObservableCollection<CustomerDto>(customerList);
         }
 
         async Task LoadMore()
-        { 
-            if (IsBusy)
-                return;
-            try
-            {
-                IsBusy = true;
+        {
+            int page = customerList.Count / size;
+            int skip = page * size;
 
-                var customers = (await ODataClient.Customers().Skip(index * size).Take(size)
-                    .OrderByDescending(o => o.Id).FindEntriesAsync()).ToList();
+            var customers = (await ODataClient.Customers().Skip(skip).Take(size)
+                .OrderByDescending(o => o.Id).FindEntriesAsync()).ToList();
 
-                if (customers.Count == 0)
-                    ItemsThreshold = -1;
+            if (customers.Count > 0)
+                foreach (CustomerDto customer in customers)
+                    customerList.Add(customer);
+            else
+                ItemsThreshold = -1;
 
-                Customers = new ObservableCollection<CustomerDto>(customers);
-                index++;
-            }
-            finally
-            {
-                IsBusy = false;
-            }
+            Customers = new ObservableCollection<CustomerDto>(customerList);
         }
 
         async Task Search()
