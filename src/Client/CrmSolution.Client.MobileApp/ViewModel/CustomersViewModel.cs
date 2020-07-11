@@ -22,6 +22,7 @@ namespace CrmSolution.Client.MobileApp.ViewModel
         public CustomersViewModel()
         {
             LoadMoreCommand = new BitDelegateCommand(LoadMore);
+            RefreshCommand = new BitDelegateCommand(Refresh);
             AddCommand = new BitDelegateCommand(Save);
             EditCommand = new BitDelegateCommand<CustomerDto>(Save);
             DeleteCommand = new BitDelegateCommand<CustomerDto>(Delete);
@@ -31,9 +32,13 @@ namespace CrmSolution.Client.MobileApp.ViewModel
 
         public int ItemsThreshold { get; set; }
 
+        public bool IsRefreshing { get; set; }
+
         public ObservableCollection<CustomerDto> Customers { get; set; }
 
         public BitDelegateCommand LoadMoreCommand { get; set; }
+
+        public BitDelegateCommand RefreshCommand { get; set; }
 
         public BitDelegateCommand AddCommand { get; set; }
 
@@ -69,18 +74,38 @@ namespace CrmSolution.Client.MobileApp.ViewModel
 
         async Task LoadMore()
         {
-            int page = customerList.Count / size;
-            int skip = page * size;
-
-            var customers = (await ODataClient.Customers().Skip(skip).Take(size)
-                .OrderByDescending(o => o.Id).FindEntriesAsync()).ToList();
-
-            if (customers.Any())
-                customerList.AddRange(customers);
+            if (IsRefreshing)
+                return;
             else
-                ItemsThreshold = -1;
+            {
+                IsRefreshing = true;
 
-            Customers = new ObservableCollection<CustomerDto>(customerList);
+                try
+                {
+                    int page = customerList.Count / size;
+                    int skip = page * size;
+
+                    var customers = (await ODataClient.Customers().Skip(skip).Take(size)
+                        .OrderByDescending(o => o.Id).FindEntriesAsync()).ToList();
+
+                    if (customers.Any())
+                        customerList.AddRange(customers);
+                    else
+                        ItemsThreshold = -1;
+
+                    Customers = new ObservableCollection<CustomerDto>(customerList);
+                }
+                finally
+                {
+                    IsRefreshing = false;
+                }
+            }
+        }
+
+        async Task Refresh()
+        {
+            await Get();
+            IsRefreshing = false;
         }
 
         private CancellationTokenSource _CancellationTokenSource = new CancellationTokenSource();
