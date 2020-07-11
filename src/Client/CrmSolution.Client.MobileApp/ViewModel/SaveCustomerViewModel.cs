@@ -47,8 +47,10 @@ namespace CrmSolution.Client.MobileApp.ViewModel
             if (!ValidationService.IsEnglishLetters(Customer.FirstName) || !ValidationService.IsEnglishLetters(Customer.LastName) || Customer.FirstName.Length > 20 || Customer.LastName.Length > 30)
                 throw new DomainLogicException("Invalid First Name or Last Name!");
 
-            if (Action == Action.Add) await Add();
-            else await Update();
+            if (Action == Action.Add)
+                await Add();
+            else 
+                await Update();
 
             await NavigationService.GoBackAsync();
         }
@@ -56,7 +58,7 @@ namespace CrmSolution.Client.MobileApp.ViewModel
         async Task Add()
         {
             await ODataClient.Customers()
-                .Set(new CustomerDto { FirstName = Customer.FirstName, LastName = Customer.LastName })
+                .Set(Customer)
                 .InsertEntryAsync();
         }
 

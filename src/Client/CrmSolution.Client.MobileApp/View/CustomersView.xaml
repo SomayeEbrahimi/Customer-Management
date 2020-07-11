@@ -6,7 +6,6 @@
     xmlns:d="http://xamarin.com/schemas/2014/forms/design"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:model="clr-namespace:CrmSolution.Shared.Dto;assembly=CrmSolution.Client.Dto"
-    xmlns:prismBehaviors="clr-namespace:Prism.Behaviors;assembly=Prism.Forms"
     xmlns:state="clr-namespace:Xamarin.Forms.StateSquid;assembly=Xamarin.Forms.StateSquid"
     xmlns:vm="clr-namespace:CrmSolution.Client.MobileApp.ViewModel"
     x:Name="customersView"
@@ -18,11 +17,7 @@
             CancelButtonColor="#0984e3"
             HorizontalTextAlignment="Center"
             Placeholder="Search Customer"
-            Text="{Binding SearchText}">
-            <SearchBar.Behaviors>
-                <prismBehaviors:EventToCommandBehavior Command="{Binding SearchCommand}" EventName="TextChanged" />
-            </SearchBar.Behaviors>
-        </SearchBar>
+            Text="{Binding SearchText}" />
         <StackLayout state:StateLayout.CurrentState="{Binding CurrentState}" StyleClass="m-20">
             <state:StateLayout.StateViews>
                 <state:StateView RepeatCount="5" StateKey="Loading">

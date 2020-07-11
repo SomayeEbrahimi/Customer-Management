@@ -8,6 +8,7 @@ using CrmSolution.Shared.Dto;
 using Simple.OData.Client;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace CrmSolution.Client.MobileApp.ViewModel
 {
@@ -21,7 +22,6 @@ namespace CrmSolution.Client.MobileApp.ViewModel
         public CustomersViewModel()
         {
             LoadMoreCommand = new BitDelegateCommand(LoadMore);
-            SearchCommand = new BitDelegateCommand(Search);
             AddCommand = new BitDelegateCommand(Save);
             EditCommand = new BitDelegateCommand<CustomerDto>(Save);
             DeleteCommand = new BitDelegateCommand<CustomerDto>(Delete);
@@ -40,8 +40,6 @@ namespace CrmSolution.Client.MobileApp.ViewModel
         public BitDelegateCommand<CustomerDto> EditCommand { get; set; }
 
         public BitDelegateCommand<CustomerDto> DeleteCommand { get; set; }
-
-        public BitDelegateCommand SearchCommand { get; set; }
 
         public string SearchText { get; set; }
 
@@ -65,7 +63,7 @@ namespace CrmSolution.Client.MobileApp.ViewModel
         {
             ItemsThreshold = 0;
 
-            customerList = (await ODataClient.Customers().Take(size).OrderByDescending(o => o.Id).FindEntriesAsync()).ToList();
+            customerList = (await ODataClient.Customers().Take(size).OrderByDescending(o => o.Id).FindEntriesAsync(_CancellationTokenSource.Token)).ToList();
             Customers = new ObservableCollection<CustomerDto>(customerList);
         }
 
@@ -77,26 +75,34 @@ namespace CrmSolution.Client.MobileApp.ViewModel
             var customers = (await ODataClient.Customers().Skip(skip).Take(size)
                 .OrderByDescending(o => o.Id).FindEntriesAsync()).ToList();
 
-            if (customers.Count > 0)
-                foreach (CustomerDto customer in customers)
-                    customerList.Add(customer);
+            if (customers.Any())
+                customerList.AddRange(customers);
             else
                 ItemsThreshold = -1;
 
             Customers = new ObservableCollection<CustomerDto>(customerList);
         }
 
-        async Task Search()
+        private CancellationTokenSource _CancellationTokenSource = new CancellationTokenSource();
+
+        public async void OnSearchTextChanged()
         {
-            if (!string.IsNullOrEmpty(SearchText))
+            _CancellationTokenSource.Cancel();
+
+            _CancellationTokenSource = new CancellationTokenSource();
+
+            if (!string.IsNullOrEmpty(SearchText) && SearchText.Length > 2)
             {
                 var customers = (await ODataClient.Customers()
-               .Where(c => c.FirstName.Contains(SearchText) || c.LastName.Contains(SearchText))
-               .FindEntriesAsync()).ToList();
+                   .Where(c => c.FirstName.Contains(SearchText) || c.LastName.Contains(SearchText))
+                   .FindEntriesAsync(_CancellationTokenSource.Token)).ToList();
 
                 Customers = new ObservableCollection<CustomerDto>(customers);
             }
-            else await Get();
+            else
+            {
+                await Get();
+            }
         }
 
         async Task Save()
