@@ -48,8 +48,7 @@
                     </state:StateView.RepeatTemplate>
                 </state:StateView>
             </state:StateLayout.StateViews>
-            <RefreshView Command="{Binding RefreshCommand}"
-                     IsRefreshing="{Binding IsRefreshing}">
+            <RefreshView IsRefreshing="{Binding IsRefreshing}">
             <CollectionView
                 ItemsSource="{Binding Customers}"
                 RemainingItemsThreshold="{Binding ItemsThreshold}"

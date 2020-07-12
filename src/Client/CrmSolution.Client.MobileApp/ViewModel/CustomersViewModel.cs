@@ -22,7 +22,6 @@ namespace CrmSolution.Client.MobileApp.ViewModel
         public CustomersViewModel()
         {
             LoadMoreCommand = new BitDelegateCommand(LoadMore);
-            RefreshCommand = new BitDelegateCommand(Refresh);
             AddCommand = new BitDelegateCommand(Save);
             EditCommand = new BitDelegateCommand<CustomerDto>(Save);
             DeleteCommand = new BitDelegateCommand<CustomerDto>(Delete);
@@ -37,8 +36,6 @@ namespace CrmSolution.Client.MobileApp.ViewModel
         public ObservableCollection<CustomerDto> Customers { get; set; }
 
         public BitDelegateCommand LoadMoreCommand { get; set; }
-
-        public BitDelegateCommand RefreshCommand { get; set; }
 
         public BitDelegateCommand AddCommand { get; set; }
 
@@ -100,12 +97,6 @@ namespace CrmSolution.Client.MobileApp.ViewModel
                     IsRefreshing = false;
                 }
             }
-        }
-
-        async Task Refresh()
-        {
-            await Get();
-            IsRefreshing = false;
         }
 
         private CancellationTokenSource _CancellationTokenSource = new CancellationTokenSource();
