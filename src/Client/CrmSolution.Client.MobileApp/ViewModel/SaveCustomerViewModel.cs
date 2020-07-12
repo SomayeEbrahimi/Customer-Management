@@ -1,4 +1,5 @@
-﻿using Bit.Core.Exceptions;
+﻿using Acr.UserDialogs;
+using Bit.Core.Exceptions;
 using Bit.ViewModel;
 using CrmSolution.Client.MobileApp.Enum;
 using CrmSolution.Client.MobileApp.Service;
@@ -12,6 +13,7 @@ namespace CrmSolution.Client.MobileApp.ViewModel
     public class SaveCustomerViewModel : BitViewModelBase
     {
         public IODataClient ODataClient { get; set; }
+        public IUserDialogs UserDialogs { get; set; }
 
         public Action Action { get; set; } = Action.Edit;
 
@@ -47,10 +49,14 @@ namespace CrmSolution.Client.MobileApp.ViewModel
             if (!ValidationService.IsEnglishLetters(Customer.FirstName) || !ValidationService.IsEnglishLetters(Customer.LastName) || Customer.FirstName.Length > 20 || Customer.LastName.Length > 30)
                 throw new DomainLogicException("Invalid First Name or Last Name!");
 
+            UserDialogs.ShowLoading();
+
             if (Action == Action.Add)
                 await Add();
             else 
                 await Update();
+
+            UserDialogs.HideLoading();
 
             await NavigationService.GoBackAsync();
         }

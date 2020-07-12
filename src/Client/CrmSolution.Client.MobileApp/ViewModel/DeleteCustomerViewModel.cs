@@ -1,4 +1,5 @@
-﻿using Bit.ViewModel;
+﻿using Acr.UserDialogs;
+using Bit.ViewModel;
 using CrmSolution.Shared.Dto;
 using Prism.Navigation;
 using Simple.OData.Client;
@@ -9,6 +10,7 @@ namespace CrmSolution.Client.MobileApp.ViewModel
     public class DeleteCustomerViewModel : BitViewModelBase
     {
         public IODataClient ODataClient { get; set; }
+        public IUserDialogs UserDialogs { get; set; }
 
         public DeleteCustomerViewModel()
         {
@@ -28,8 +30,12 @@ namespace CrmSolution.Client.MobileApp.ViewModel
 
         async Task Delete()
         {
+            UserDialogs.ShowLoading();
+
             await ODataClient.Customers().Key(Customer.Id)
                 .DeleteEntryAsync();
+
+            UserDialogs.HideLoading();
 
             await NavigationService.GoBackAsync();
         }
